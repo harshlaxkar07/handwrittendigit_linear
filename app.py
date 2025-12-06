@@ -62,7 +62,7 @@ def preprocess_digit(image_bytes):
 
 
 # Load saved model
-model = tf.keras.models.load_model("model/mnist_linear.h5")
+model = tf.keras.models.load_model("mnist_linear.h5")
 
 app = Flask(__name__)
 
