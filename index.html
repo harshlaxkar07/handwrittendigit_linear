@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digit Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 5px;
+        }
+
+        /* Notice / Instructions Box */
+        .notice-box {
+            background: #fff4d8;
+            border-left: 5px solid #ff9800;
+            width: 450px;
+            margin: 20px auto;
+            text-align: left;
+            padding: 15px 20px;
+            border-radius: 8px;
+        }
+
+        .notice-box h3 {
+            margin-top: 0;
+            color: #c57200;
+        }
+
+        .notice-box ul {
+            padding-left: 20px;
+        }
+
+        .notice-box li {
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        /* Upload Box */
+        .upload-box {
+            border: 3px dashed #777;
+            background: #fff;
+            padding: 40px;
+            width: 420px;
+            margin: 25px auto;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            background: #f3f7ff;
+            border-color: #1764e0;
+        }
+
+        img {
+            width: 200px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #1764e0;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        #result h3 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Handwritten Digit Classifier</h2>
+<p>Upload a handwritten digit image to get a prediction.</p>
+
+<!-- Instruction Panel -->
+<div class="notice-box">
+    <h3>📝 Image Upload Guidelines</h3>
+    <ul>
+        <li>Digit should be <strong>Thin</strong></li>
+        <li>Digit should be <strong>Straight</strong> (not tilted)</li>
+        <li>Digit must be <strong>Centered</strong> in the image</li>
+        <li>Use a <strong>High Contrast</strong> background (light background, dark digit)</li>
+        <li>Ensure <strong>No brush-like noise</strong> or extra strokes</li>
+        <li>Avoid shadows, smudges, or blurred photos</li>
+        <li>Recommended background: <strong>White or Light Grey</strong></li>
+    </ul>
+</div>
+
+<!-- Upload Box -->
+<div class="upload-box" onclick="document.getElementById('file').click()">
+    <p>📤 Click or drag image here to upload</p>
+</div>
+
+<input type="file" id="file" accept="image/*" style="display:none">
+
+<div id="preview"></div>
+<div id="result"></div>
+
+<script>
+document.getElementById("file").addEventListener("change", function(){
+    let file = this.files[0];
+    if (!file) return;
+
+    // Show preview
+    let reader = new FileReader();
+    reader.onload = function(e){
+        document.getElementById("preview").innerHTML =
+            `<img src="${e.target.result}" alt="Preview"/>`;
+    };
+    reader.readAsDataURL(file);
+
+    // Send to backend
+    let formData = new FormData();
+    formData.append("file", file);
+
+    fetch("/predict", { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("result").innerHTML = `
+                <h3>Prediction: <strong>${data.prediction}</strong></h3>
+                <a class="btn" href="/download_preprocessed">Download Preprocessed Image</a>
+            `;
+        });
+});
+</script>
+
+</body>
+</html>
