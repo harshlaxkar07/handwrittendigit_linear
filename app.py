@@ -92,4 +92,5 @@ def download_preprocessed():
     return send_file("preprocessed.png", as_attachment=True)
 
 # Run flask app
-app.run(port=5000)
+if __name__ == "__main__":
+    app.run(port=5000, debug=False)
